@@ -1,0 +1,118 @@
+@import url(fonts/arial.css);
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: lightgrey;
+    color: darkblue;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+}
+
+body {
+    margin: 80px;
+}
+
+.heading:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+h1.title {
+    font-size: 80px;
+    font-weight: bold;
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+}
+
+.container {
+    width: 500px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.game-container {
+    margin: 50px auto;
+    position: relative;
+    cursor: default;
+    background: darkgoldenrod;
+    border-radius: 5px;
+    width: 500px;
+    height: 500px;
+}
+
+.grid-container {
+    position: absolute;
+    z-index: 1;
+    padding: 20px;
+}
+
+.grid-row {
+    margin-bottom: 20px;
+}
+.grid-row:last-child {
+    margin-bottom: 0;
+}
+.grid-row:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.grid-cell {
+    width: 100px;
+    height: 100px;
+    margin-right: 20px;
+    float: left;
+    border-radius: 5px;
+    background-color: rgba(211, 211, 211, 0.35);
+}
+.grid-cell:last-child {
+    margin-right: 0;
+}
+
+.tile-container {
+    position: absolute;
+    z-index: 2;
+    padding: 20px;
+}
+
+.tile {
+    width: 100px;
+    height: 100px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    float: left;
+    transition: 100ms ease-in-out;
+    transition-property: transform;
+}
+.tile, .tile-inner {
+    border-radius: 3px;
+    background: whitesmoke;
+    text-align: center;
+    font-weight: bold;
+    z-index: 10;
+    font-size: 10px;
+}
+
+
+.above-game:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.new-game-button {
+    background: orange;
+    border-radius: 3px;
+    padding: 0 20px;
+    text-decoration: none;
+    color: ghostwhite;
+    height: 40px;
+    line-height: 42px;
+    display: block;
+    text-align: center;
+    float: right;
+}
