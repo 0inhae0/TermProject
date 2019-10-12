@@ -6,50 +6,53 @@ class htmlActuator {
 
     public function __construct() {
         $this->dom = new DOMDocument();
-        $this->dom->loadHTMLFile("index.php");
-        $this->dom->preserveWhiteSpace = true;
+        $this->dom->loadHTMLFILE("index.php");
+        $this->dom->preserveWhiteSpace = false;
 
         $this->tileContainer = $this->dom->getElementById("tile-container");
+        foreach ($this->tileContainer->childNodes as $childNode) {
+            $this->tileContainer->removeChild($childNode);
+        }
 
         $this->score = 0;
     }
 
     public function actuate(grid $grid, $metadata) {
         $this->size = $grid->size;
-        foreach ($grid->cells as $tile) {
+        foreach ($grid->tiles as $tile) {
             $this->addTile($tile);
         }
     }
 
     public function addTile(tile $tile) {
         $wrapper = $this->dom->createElement("div");
-        $this->dom->appendChild($wrapper);
         $tileInner = $this->dom->createElement("div");
-        $this->dom->appendChild($tileInner);
         $position = isset($tile->previousPosition) ? $tile->previousPosition : ["x" => $tile->x, "y" => $tile->y];
         $positionClass = $this->positionClass($position);
 
-        $classes = ["tile", "tile-".$tile->value, $positionClass];
+        $classes = [htmlspecialchars("tile"), htmlspecialchars("tile-".$tile->value), htmlspecialchars($positionClass)];
 
         if ($tile->value > 20) {
-            array_push($classes, "tile-super");
+            array_push($classes, htmlspecialchars("tile-super"));
         }
 
         $this->applyClasses($wrapper, $classes);
 
-        $tileInner = $this->dom->createElement("tile-inner");
+        $tileInner->setAttribute("class", htmlspecialchars("tile-inner"));
 
         {
             $tileInner->textContent = $tile->value;
             $gridSize = $this->size;
             $gridCellWidth = (500 - (20 * ($gridSize + 1))) / $gridSize;
-            $xPosition = ($tile->x + 1) * 20 + $tile->x * $gridCellWidth;
-            $yPosition = ($tile->y + 1) * 20 + $tile->y * $gridCellWidth;
         }
-        $tileInner->setAttribute("style", "width: ".$gridCellWidth."px; height: ".$gridCellWidth."px; transform: translate(".$xPosition."px, ".$yPosition."px);");
+        $tileInner->setAttribute("style", htmlspecialchars("width: ".$gridCellWidth."px; height: ".$gridCellWidth."px;"));
+        $this->dom->importNode($wrapper);
+        $this->dom->importNode($this->tileContainer);
+        $this->dom->importNode($tileInner);
         $wrapper->appendChild($tileInner);
         $this->tileContainer->appendChild($wrapper);
-        $this->dom->saveHTMLFile("index.php");
+        $this->dom->importNode($this->tileContainer);
+        $this->dom->saveHTMLFile("php/tileViewer.php");
     }
 
     public function positionClass($position) {

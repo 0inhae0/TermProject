@@ -1,18 +1,33 @@
 <?php
-class grid {
-    public $size;
-    public $cells;
 
-    public function __construct(int $size, $previousState = null) {
+/**
+ * Class grid
+ */
+class grid {
+    /**
+     * @var int size
+     * @var tile[] tiles;
+     */
+    public $size;
+    public $tiles;
+
+    /**
+     * grid constructor.
+     * @param int $size
+     * @param tile[] $previousState
+     */
+    public function __construct($size, $previousState = null) {
         $this->size = $size;
-        $this->cells = $previousState ? $this->fromState($previousState) : $this->empty();
+        $this->tiles = $previousState ? $this->fromState($previousState) : $this->addRandomTilesInit();
     }
 
-    public function fromState($state) {
-        $cells = array();
-
+    /**
+     * @param tile[] $state
+     * @return tile[]
+     */
+    public function fromState($state){
         for ($x = 0; $x < $this->size; $x++) {
-            $row = $cells[$x] = [];
+            $row = $this->tiles[$x] = [];
 
             for ($y = 0; $y < $this->size; $y++) {
                 $tile = $state[$x][$y];
@@ -20,52 +35,38 @@ class grid {
             }
         }
 
-        return $cells;
+        return $this->tiles;
     }
 
-    public function empty() {
-        $cells = array();
-
+    /**
+     * @return tile[]
+     */
+    public function addRandomTilesInit() {
+        $this->tiles = array();
+        $alreadyInputValue = array();
         for ($x = 0; $x < $this->size; $x++) {
             for ($y = 0; $y < $this->size; $y++) {
-                $tile = new tile(["x" => $x, "y" => $y], 0);
-                array_push($cells, $tile);
+                $val = rand(0, $this->size * $this->size - 1);
+                while (in_array($val, $alreadyInputValue)) {
+                    $val = rand(0, $this->size * $this->size - 1);
+                }
+                array_push($this->tiles, new tile(["x" => $x, "y" => $y], $val));
+                array_push($alreadyInputValue, $val);
             }
         }
-
-        return $cells;
+        return $this->tiles;
     }
 
     public function availableCells() {
-        $cells = array();
-        $this->eachCell(function ($x, $y, $tile) {
-            if (!isset($tile)) {
-                array_push($this->cells, new tile(["x" => $x, "y" => $y], 0));
-            }
-        });
-
-        return $cells;
+        return $this->tiles;
     }
 
     public function randomAvailableCell() {
         $cells = $this->availableCells();
-
         if (count($cells) != 0) {
             return $cells[rand(0, count($cells) - 1)];
         }
         return null;
-    }
-
-    public function cellsAvailable() {
-        return count($this->availableCells()) != 0;
-    }
-
-    public function eachCell($callback) {
-        for ($x = 0; $x < $this->size; $x++) {
-            for ($y = 0; $y < $this->size; $y++) {
-                $callback($x, $y, new tile(["x" => $x, "y" => $y], 0));
-            }
-        }
     }
 
     public function serialize() {
@@ -75,14 +76,25 @@ class grid {
             $row = $cellState[$x] = [];
 
             for ($y = 0; $y < $this->size; $y++) {
-                array_push($row, $this->cells[$x][$y] ? $this->cells[$x][$y] : null);
+                array_push($row, $this->tiles[$x][$y] ? $this->tiles[$x][$y] : null);
             }
         }
 
-        return ["size" => $this->size, "cells" => $cellState];
+        return ["size" => $this->size, "tiles" => $cellState];
     }
 
-    public function insertTile(tile $tile) {
-        $this->cells[$tile->x][$tile->y] = $tile;
+    public function insertTile(tile $tileToInsert) {
+        $isValid = true;
+        foreach ($this->tiles as $tile) {
+            if ($tile->x == $tileToInsert->x and $tile->y == $tileToInsert->y) {
+                $isValid = false;
+                break;
+            }
+        }
+        if ($isValid) array_push($this->tiles, $tileToInsert);
+    }
+
+    public function tilesAvailable() {
+        return count($this->availableCells()) < $this->size * $this->size;
     }
 }

@@ -1,10 +1,15 @@
+<?php
+require_once "php/gameManager.php";
+require_once "php/grid.php";
+require_once "php/htmlActuator.php";
+require_once "php/keyboardInputManager.php";
+require_once "php/tile.php";
+?>
 <!DOCTYPE html>
-<?php require "BASE_PATH.php"; ?>
 <html lang="en">
-<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="text/html">
     <title>Term Project</title>
     <link href="style/main.css?after" rel="stylesheet" type="text/css">
 </head>
@@ -16,9 +21,9 @@
         <div class="above-game">
             <p>Play our sliding puzzle!</p>
             <div>
-                <form method="post" action="<?php new gameManager(); echo $_SERVER['PHP_SELF'] ?>">
+                <form method="post" name="sizeForm" action="<?php echo $_SERVER['PHP_SELF'] ?>">
                     Board size : <label>
-                        <input name="size" type="number" min="3" max="10" value='<?php echo (isset($_POST["size"]) ? $_POST["size"] : 4); ?>'>
+                        <input name="sizeInput" type="number" min="3" max="10" value="<?php echo isset($_POST['sizeInput']) ? (string) $_POST['sizeInput'] : "4"; ?>">
                     </label>
                     <input type="submit" class="new-game-button" value="New Game">
                 </form>
@@ -27,7 +32,7 @@
 
         <div class="game-container">
             <div class="grid-container">
-                <?php $size = isset($_POST["size"]) ? $_POST["size"] : 4;
+                <?php $size = isset($_POST["sizeInput"]) ? $_POST["sizeInput"] : 4;
                     $gridSize = $size;
                     $gridCellWidth = (500 - (20 * ($gridSize + 1))) / $gridSize;
                 ?>
@@ -36,7 +41,7 @@
                 <div class="grid-row">
                     <?php for ($j = 0; $j < $gridSize; $j++) {
                         ?>
-                    <div class="grid-cell" style="width: <?php echo $gridCellWidth?>px; height: <?php echo $gridCellWidth; ?>px"></div>
+                    <div class="grid-cell" style="width: <?php echo $gridCellWidth; ?>px; height: <?php echo $gridCellWidth; ?>px;"></div>
                     <?php }
                     ?>
                 </div>
@@ -44,7 +49,18 @@
                 ?>
             </div>
 
-            <div class="tile-container" id="tile-container"></div>
+            <div class="tile-container">
+<?php
+require_once "php/tileViewer.php";
+function start() {
+    if (isset($_POST["sizeInput"])) {
+        new tileViewer((int)$_POST["sizeInput"]);
+    } else {
+        new tileViewer(4);
+    }
+}
+start();
+?>          </div>
         </div>
     </div>
 </body>

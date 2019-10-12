@@ -80,13 +80,14 @@ h1.title {
 }
 
 .tile {
-    width: 100px;
-    height: 100px;
     margin-right: 20px;
     margin-bottom: 20px;
     float: left;
     transition: 100ms ease-in-out;
     transition-property: transform;
+}
+.tile:last-child {
+    margin: 0;
 }
 .tile, .tile-inner {
     border-radius: 3px;
