@@ -41,7 +41,7 @@ class tileViewer {
         //$classes = ["tile", "tile-".$tile->value, "tile-position-".(($tile->x)+1)."-".(($tile->y)+1)];
         //$classesHTMLForm = join(" ", $classes);
         $classesHTMLForm = "tile tile-".$tile->value." tile-position-".(($tile->x)+1)."-".(($tile->y)+1);
-        $styleHTMLForm = "width: ".$this->tileWidth."px; height:".$this->tileWidth."px;";
+        $styleHTMLForm = "width: ".$this->tileWidth."px; height:".$this->tileWidth."px;".' font-size: '.(($this->tileWidth)/3).'px;'." line-height: ".$this->tileWidth."px;";
         $tileValue = $tile->value;
 
         echo ("\t\t\t\t".'<div class="'.$classesHTMLForm.'" style="'.$styleHTMLForm.'">'."\n");
