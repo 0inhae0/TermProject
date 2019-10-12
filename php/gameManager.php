@@ -10,7 +10,7 @@ class gameManager {
 
     function __construct() {
         $this->post = $_POST;
-        $this->size = isset($this->post["size"]) ? $this->post["size"] : 4;
+        $this->size = isset($this->post["sizeInput"]) ? $this->post["sizeInput"] : 4;
         $this->grid = new grid($this->size);
         $this->actuator = new htmlActuator();
         $this->setup();
@@ -39,9 +39,8 @@ class gameManager {
     }
 
     public function addTile($value) {
-        if ($this->grid->cellsAvailable()) {
+        if ($this->grid->tilesAvailable()) {
             $tile = new tile($this->grid->randomAvailableCell(), $value);
-
             $this->grid->insertTile($tile);
         }
     }

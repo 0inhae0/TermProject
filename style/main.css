@@ -67,7 +67,6 @@ h1.title {
     margin-right: 20px;
     float: left;
     border-radius: 5px;
-    background-color: rgba(211, 211, 211, 0.35);
 }
 .grid-cell:last-child {
     margin-right: 0;
@@ -80,17 +79,18 @@ h1.title {
 }
 
 .tile {
-    width: 100px;
-    height: 100px;
     margin-right: 20px;
     margin-bottom: 20px;
     float: left;
     transition: 100ms ease-in-out;
     transition-property: transform;
 }
+.tile:last-child {
+    margin: 0;
+}
 .tile, .tile-inner {
     border-radius: 3px;
-    background: whitesmoke;
+    background-color: rgba(0, 211, 211, 0.1);
     text-align: center;
     font-weight: bold;
     z-index: 10;
