@@ -1,9 +1,9 @@
-@import url(fonts/arial.css);
+@import url(/style/fonts/arial.css);
 
 html, body {
     margin: 0;
     padding: 0;
-    background: lightgrey;
+    background: floralwhite;
     color: darkblue;
     font-family: Arial, sans-serif;
     font-size: 18px;
@@ -37,7 +37,7 @@ h1.title {
     margin: 50px auto;
     position: relative;
     cursor: default;
-    background: darkgoldenrod;
+    background: darkgrey;
     border-radius: 5px;
     width: 500px;
     height: 500px;
@@ -75,7 +75,7 @@ h1.title {
 .tile-container {
     position: absolute;
     z-index: 2;
-    padding: 20px;
+    padding: 20px 0 0 20px;
 }
 
 .tile {
@@ -90,11 +90,15 @@ h1.title {
 }
 .tile, .tile-inner {
     border-radius: 3px;
-    background-color: rgba(0, 211, 211, 0.1);
+    background-color: whitesmoke;
     text-align: center;
     font-weight: bold;
     z-index: 10;
     font-size: 10px;
+}
+.tile.tile-0 .tile-inner {
+    background: papayawhip;
+    z-index: 0;
 }
 
 

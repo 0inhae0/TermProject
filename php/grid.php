@@ -2,59 +2,49 @@
 
 /**
  * Class grid
+ * 화면에 표시되는 슬라이딩 보드의 기본 격자 구조 클래스
  */
 class grid {
     /**
-     * @var int size
-     * @var tile[] tiles;
+     * @var int 슬라이딩 보드의 가로 및 세로 길이
+     * ex) 3*3 보드는 3
      */
     public $size;
+    /**
+     * @var tile[] 슬라이딩 보드의 타일들을 저장하는 배열
+     */
     public $tiles;
 
     /**
      * grid constructor.
      * @param int $size
-     * @param tile[] $previousState
+     * @param null $previousState 이전 보드의 상태
+     * 만약 사이트에 접속해도 이전 보드상태를 유지하고 싶을 경우 이 값을 이용할 예정
      */
-    public function __construct($size, $previousState = null) {
-        $this->size = $size;
-        $this->tiles = $previousState ? $this->fromState($previousState) : $this->addRandomTilesInit();
-    }
-
-    /**
-     * @param tile[] $state
-     * @return tile[]
-     */
-    public function fromState($state){
-        for ($x = 0; $x < $this->size; $x++) {
-            $row = $this->tiles[$x] = [];
-
-            for ($y = 0; $y < $this->size; $y++) {
-                $tile = $state[$x][$y];
-                $row[$y] = $tile ? new tile($tile->position, $tile->value) : null;
-            }
+    public function __construct(int $size, $previousState = null) {
+        if ($size < 3 or $size > 10) {
+            $size = 4;
         }
-
-        return $this->tiles;
+        $this->size = $size;
+        $this->tiles = isset($previousState) ? $previousState : $this->addRandomTilesInit();
     }
 
     /**
      * @return tile[]
      */
     public function addRandomTilesInit() {
-        $this->tiles = array();
-        $alreadyInputValue = array();
+        $rtn = array();
+        $inputValue = array();
+        for ($i = 0; $i < $this->size * $this->size; $i++) {
+            array_push($inputValue, $i);
+        }
+        shuffle($inputValue);
         for ($x = 0; $x < $this->size; $x++) {
             for ($y = 0; $y < $this->size; $y++) {
-                $val = rand(0, $this->size * $this->size - 1);
-                while (in_array($val, $alreadyInputValue)) {
-                    $val = rand(0, $this->size * $this->size - 1);
-                }
-                array_push($this->tiles, new tile(["x" => $x, "y" => $y], $val));
-                array_push($alreadyInputValue, $val);
+                array_push($rtn, new tile(["x" => $x, "y" => $y], $inputValue[$x * $this->size + $y]));
             }
         }
-        return $this->tiles;
+        return $rtn;
     }
 
     public function availableCells() {
