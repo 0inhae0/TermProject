@@ -48,18 +48,33 @@ require_once "php/tile.php";
             </div>
 
             <div class="tile-container">
-                <style> <?php require_once "style/main.css"; ?> </style>
-<?php
-require_once "php/tileViewer.php";
-function start() {
-    if (isset($_POST["sizeInput"])) {
-        new tileViewer((int)$_POST["sizeInput"]);
-    } else {
-        new tileViewer(4);
-    }
-}
-start();
-?>          </div>
+                <form method="post" name="tile-container" action="<?php echo $_SERVER['PHP_SELF'] ?>">
+                    <style> <?php require_once "style/main.css"; ?> </style>
+                    <?php
+                    require_once "php/tileViewer.php";
+                    function start() {
+                        if (isset($_POST["sizeInput"])) {
+                            if (isset($_POST["previousGrid"])) {
+                                for ($x = 0; $x < $_POST["sizeInput"]; $x++) {
+                                    for ($y = 0; $y < $_POST["sizeInput"]; $y++) {
+                                        if (isset($_POST[$x . "-" . $y])) {
+                                            new tileViewer((int)$_POST["sizeInput"], $_POST["previousGrid"], ["x" => $x, "y" => $y]);
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                            new tileViewer((int)$_POST["sizeInput"]);
+                            return;
+                        } else {
+                            new tileViewer(4);
+                            return;
+                        }
+                    }
+                    start();
+                    ?>
+                </form>
+          </div>
         </div>
     </div>
 </body>

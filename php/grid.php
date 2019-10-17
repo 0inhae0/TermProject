@@ -14,6 +14,14 @@ class grid {
      * @var tile[] 슬라이딩 보드의 타일들을 저장하는 배열
      */
     public $tiles;
+    /**
+     * @var array 빈 타일의 위치. ["x" => var, "y" => var]의 형태.
+     */
+    public $positionNone;
+    /**
+     * @var tile 빈 타일
+     */
+    public $tileNone;
 
     /**
      * grid constructor.
@@ -30,7 +38,7 @@ class grid {
     }
 
     /**
-     * @return tile[]
+     * @return tile[] 타일의 위치를 무작위로 정해서 추가한 배열
      */
     public function addRandomTilesInit() {
         $rtn = array();
@@ -41,50 +49,40 @@ class grid {
         shuffle($inputValue);
         for ($x = 0; $x < $this->size; $x++) {
             for ($y = 0; $y < $this->size; $y++) {
-                array_push($rtn, new tile(["x" => $x, "y" => $y], $inputValue[$x * $this->size + $y]));
+                $isNone = false;
+                if ($inputValue[$x * $this->size + $y] == 0) {
+                    // Value가 0인 타일을 빈 타일로 하기로 합시다.
+                    $this->positionNone = ['x' => $x, 'y' => $y];
+                    $isNone = true;
+                }
+                if ($isNone) {
+                    $this->tileNone = new tile($this->positionNone, 0);
+                    array_push($rtn, $this->tileNone);
+                }
+                else array_push($rtn, new tile(['x' => $x, 'y' => $y], $inputValue[$x * $this->size + $y]));
             }
         }
         return $rtn;
     }
 
-    public function availableCells() {
-        return $this->tiles;
-    }
-
-    public function randomAvailableCell() {
-        $cells = $this->availableCells();
-        if (count($cells) != 0) {
-            return $cells[rand(0, count($cells) - 1)];
-        }
-        return null;
-    }
-
-    public function serialize() {
-        $cellState = array();
-
-        for ($x = 0; $x < $this->size; $x++) {
-            $row = $cellState[$x] = [];
-
-            for ($y = 0; $y < $this->size; $y++) {
-                array_push($row, $this->tiles[$x][$y] ? $this->tiles[$x][$y] : null);
-            }
-        }
-
-        return ["size" => $this->size, "tiles" => $cellState];
-    }
-
-    public function insertTile(tile $tileToInsert) {
-        $isValid = true;
+    public function swapWithNoneTile(tile $tile1) {
+        $has = false;
         foreach ($this->tiles as $tile) {
-            if ($tile->x == $tileToInsert->x and $tile->y == $tileToInsert->y) {
-                $isValid = false;
+            if ($tile->isEqual($tile1)) {
+                $has = true;
+                $tileToSwap1 = &$tile;
                 break;
             }
         }
-        if ($isValid) array_push($this->tiles, $tileToInsert);
-    }
+        if (!($has)) return;
 
-    public function tilesAvailable() {
-        return count($this->availableCells()) < $this->size * $this->size;
+        $tmp = $tileToSwap1->x;
+        $tileToSwap1->x = $this->positionNone["x"];
+        $this->positionNone["x"] = $tmp;
+        $tmp = $tileToSwap1->y;
+        $tileToSwap1->y = $this->positionNone["y"];
+        $this->positionNone["y"] = $tmp;
+        $this->tileNone->x = $this->positionNone["x"];
+        $this->tileNone->y = $this->positionNone["y"];
     }
 }
