@@ -1,11 +1,8 @@
-@import url(/style/fonts/arial.css);
-
 html, body {
     margin: 0;
     padding: 0;
     background: floralwhite;
     color: darkblue;
-    font-family: Arial, sans-serif;
     font-size: 18px;
 }
 
