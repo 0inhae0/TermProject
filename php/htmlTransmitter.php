@@ -1,5 +1,5 @@
 <?php
-require_once "grid.php";
+require_once "simpleRequire.php";
 
 /**
  * Class htmlTransmitter HTML형식에 맞춰 index.php에서 출력하는 클래스.
@@ -79,5 +79,17 @@ class htmlTransmitter {
         echo ('<div class="'.$HTMLFormClasses.'" style="'.$HTMLFormStyle.'">'.PHP_EOL);
         echo ('<input type="submit" class="tile-inner" name="'.($tile->x)."-".($tile->y).'" style="'.$HTMLFormStyle.'" value='.$tileValue.'>'.PHP_EOL);
         echo ("</div>".PHP_EOL);
+    }
+
+    public function transmitMoveDirection(grid $grid) {
+        echo '
+        <form method="post" name="moveDirection" class="direction" action="'.$_SERVER['PHP_SELF'].'">
+            <input type="submit" name="direction" class="direction-button" value="'.inputManager::UP.'">
+            <input type="submit" name="direction" class="direction-button" value="'.inputManager::RIGHT.'">
+            <input type="submit" name="direction" class="direction-button" value="'.inputManager::DOWN.'">
+            <input type="submit" name="direction" class="direction-button" value="'.inputManager::LEFT.'">
+            <input type="hidden" name="sizeInput" value="'.(isset($_POST['sizeInput']) ? $_POST['sizeInput'] : 4).'">
+            <input type="hidden" name="previousGrid" value="'.htmlspecialchars(serialize($grid)).'">
+        </form>';
     }
 }

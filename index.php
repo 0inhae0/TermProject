@@ -1,6 +1,5 @@
 <?php
-require_once "php/gridViewer.php";
-require_once "php/htmlTransmitter.php";
+require_once "php/simpleRequire.php";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,34 +9,21 @@ require_once "php/htmlTransmitter.php";
     <title>Term Project</title>
     <link href="style/main.css" rel="stylesheet" type="text/css">
 </head>
-<body>
-    <div class="container">
-        <div class="heading">
-            <h1 class="title">Term Project</h1>
-        </div>
-        <div class="above-game">
-            <p>Play our sliding puzzle!</p>
-            <div>
-                <form method="post" name="sizeForm" action="<?php echo $_SERVER['PHP_SELF'] ?>">
-                    Board size : <label>
-                        <input name="sizeInput" type="number" min="3" max="10" value="<?php echo isset($_POST['sizeInput']) ? (string) $_POST['sizeInput'] : "4"; ?>">
-                    </label>
-                    <input type="submit" class="new-game-button" value="New Game">
-                </form>
-            </div>
-        </div>
-
-        <div class="game-container">
-            <?php
-            $htmlTransmitter = new htmlTransmitter();
-            $htmlTransmitter->transmitGridContainer();
-            ?>
-
-            <?php
-            $gridViewer = new gridViewer();
-            $gridViewer->init();
-            ?>
-        </div>
-    </div>
+<body onload="document.sizeForm.submit()">
+    <header>
+        <h1 class="title">Term Project</h1>
+        <h3 class="description">Play our sliding puzzle!</h3>
+    </header>
+    <main>
+        <form method="post" target="game-container" id="sizeForm" name="sizeForm" class="new-game-form" action="php/gameContainer_html.php">
+            <label for="sizeInput">Board size : </label>
+            <input type="number" id="sizeInput" name="sizeInput" min="3" max="10" value="<?php echo isset($_POST['sizeInput']) ? (string) $_POST['sizeInput'] : "4"; ?>">
+            <input type="submit" id="New_Game" name="New_Game" class="new-game-button" value="New Game">
+        </form>
+        <iframe class="game-container" id="game-container" name="game-container" scrolling="no">iframe 미지원 브라우저입니다.</iframe>
+    </main>
+    <footer>
+        <h4>인터넷 프로그래밍 4조</h4>
+    </footer>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <?php
-require_once "tile.php";
+require_once "simpleRequire.php";
 
 /**
  * Class grid 슬라이딩 보드의 상태를 표현하는 클래스
@@ -12,17 +12,21 @@ class grid {
      */
     public $size;
     /**
-     * @var array
+     * @var tile[]
      */
     public $tiles;
     /**
-     * @var array 빈 타일의 위치 정보. ["x" => $x, "y" => $y]의 형태.
+     * @var position
      */
     public $nonePosition;
     /**
      * @var tile 빈 타일. 여러 계산상의 편리함 때문에 따로 저장해놓고자 함.
      */
     public $noneTile;
+    /**
+     * @var tileMover
+     */
+    public $tileMover;
 
     /**
      * grid constructor.
@@ -31,10 +35,25 @@ class grid {
     public function __construct(int $size) {
         $this->size = $size;
         $this->tiles = $this->addRandomTilesInit();
+        if (!($this->isSolvable())) {
+            foreach ($this->tiles as $tile1) {
+                if ($tile1->value != 0) {
+                    foreach ($this->tiles as $tile2) {
+                        if ($tile2->value != 0) {
+                            $this->swapWithNoneTile($tile1);
+                            $this->swapWithNoneTile($tile2);
+                            $this->swapWithNoneTile($tile1);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        $this->tileMover = new tileMover($this);
     }
 
     /**
-     * @return array
+     * @return tile[]
      * 
      * tile의 value를 무작위 순서로 정하여 rtn 배열에 추가한 후 반환
      */
@@ -48,11 +67,11 @@ class grid {
         for ($x = 0; $x < $this->size; $x++) {
             for ($y = 0; $y < $this->size; $y++) {
                 if ($inputValue[$x * $this->size + $y] == 0) {
-                    $this->nonePosition = ['x' => $x, 'y' => $y];
+                    $this->nonePosition = new position($x, $y);
                     $this->noneTile = new tile($this->nonePosition, 0);
                     array_push($rtn, $this->noneTile);
                 }
-                else array_push($rtn, new tile(['x' => $x, 'y' => $y], $inputValue[$x * $this->size + $y]));
+                else array_push($rtn, new tile(new position($x, $y), $inputValue[$x * $this->size + $y]));
             }
         }
         return $rtn;
@@ -79,35 +98,33 @@ class grid {
      * 보드판에서 클릭했을 때 tile이 이동하는 것을 이 함수를 반복하는 것으로 구현.
      */
     public function swapWithNoneTile(tile $tile1) {
-        $has = false;
         foreach ($this->tiles as $tile) {
             if ($tile->isEqual($tile1)) {
-                $has = true;
                 $tileToSwap1 = &$tile;
                 break;
             }
         }
-        if (!($has)) return;
+        if (!(isset($tileToSwap1))) return;
 
         $tmp = $tileToSwap1->x;
-        $tileToSwap1->x = $this->nonePosition["x"];
-        $this->nonePosition["x"] = $tmp;
+        $tileToSwap1->x = $this->nonePosition->getX();
+        $this->nonePosition->setX($tmp);
         $tmp = $tileToSwap1->y;
-        $tileToSwap1->y = $this->nonePosition["y"];
-        $this->nonePosition["y"] = $tmp;
-        $this->noneTile->x = $this->nonePosition["x"];
-        $this->noneTile->y = $this->nonePosition["y"];
+        $tileToSwap1->y = $this->nonePosition->getY();
+        $this->nonePosition->setY($tmp);
+        $this->noneTile->x = $this->nonePosition->getX();
+        $this->noneTile->y = $this->nonePosition->getY();
     }
 
     /**
-     * @param array $position 클릭한 타일의 position 배열
-     * 
+     * @param position $position 클릭한 타일의 position 배열
+     *
      * noneTile과 수직, 수평상의 위치에 있는지 확인한 후,
      * 만약 그렇다면 인접한 tile끼리 위치를 바꾸는 것을 반복해서 이동시킨다.
      */
-    public function moveTile(array $position) {
+    public function moveTile(position $position) {
         foreach ($this->tiles as $tile) {
-            if ($tile->x == $position["x"] && $tile->y == $position["y"]) {
+            if ($tile->x == $position->getX() && $tile->y == $position->getY()) {
                 $tileClicked = $tile;
                 break;
             }
@@ -116,42 +133,21 @@ class grid {
             return;
         }
 
-        if ($this->nonePosition["x"] == $tileClicked->x) {
-            if ($this->nonePosition["y"] < $tileClicked->y) {
-                while ($this->nonePosition["y"] < $tileClicked->y) {
+        if ($this->nonePosition->getX() == $tileClicked->x) {
+            if ($this->nonePosition->getY() < $tileClicked->y) {
+                while ($this->nonePosition->getY() < $tileClicked->y) {
                     foreach ($this->tiles as $tile) {
-                        if ($tile->x == $this->nonePosition["x"] && $tile->y == $this->nonePosition["y"] + 1) {
+                        if ($tile->x == $this->nonePosition->getX() && $tile->y == $this->nonePosition->getY() + 1) {
                             $this->swapWithNoneTile($tile);
                             break;
                         }
                     }
                 }
             }
-            elseif ($this->nonePosition["y"] > $tileClicked->y) {
-                while ($this->nonePosition["y"] > $tileClicked->y) {
+            elseif ($this->nonePosition->getY() > $tileClicked->y) {
+                while ($this->nonePosition->getY() > $tileClicked->y) {
                     foreach ($this->tiles as $tile) {
-                        if ($tile->x == $this->nonePosition["x"] && $tile->y == $this->nonePosition["y"] - 1) {
-                            $this->swapWithNoneTile($tile);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        elseif ($this->nonePosition["y"] == $tileClicked->y) {
-            if ($this->nonePosition["x"] < $tileClicked->x) {
-                while ($this->nonePosition["x"] < $tileClicked->x) {
-                    foreach ($this->tiles as $tile) {
-                        if ($tile->x == $this->nonePosition["x"] + 1 && $tile->y == $this->nonePosition["y"]) {
-                            $this->swapWithNoneTile($tile);
-                            break;
-                        }
-                    }
-                }
-            } elseif ($this->nonePosition["x"] > $tileClicked->x) {
-                while ($this->nonePosition["x"] > $tileClicked->x) {
-                    foreach ($this->tiles as $tile) {
-                        if ($tile->x == $this->nonePosition["x"] - 1 && $tile->y == $this->nonePosition["y"]) {
+                        if ($tile->x == $this->nonePosition->getX() && $tile->y == $this->nonePosition->getY() - 1) {
                             $this->swapWithNoneTile($tile);
                             break;
                         }
@@ -159,5 +155,66 @@ class grid {
                 }
             }
         }
+        elseif ($this->nonePosition->getY() == $tileClicked->y) {
+            if ($this->nonePosition->getX() < $tileClicked->x) {
+                while ($this->nonePosition->getX() < $tileClicked->x) {
+                    foreach ($this->tiles as $tile) {
+                        if ($tile->x == $this->nonePosition->getX() + 1 && $tile->y == $this->nonePosition->getY()) {
+                            $this->swapWithNoneTile($tile);
+                            break;
+                        }
+                    }
+                }
+            } elseif ($this->nonePosition->getX() > $tileClicked->x) {
+                while ($this->nonePosition->getX() > $tileClicked->x) {
+                    foreach ($this->tiles as $tile) {
+                        if ($tile->x == $this->nonePosition->getX() - 1 && $tile->y == $this->nonePosition->getY()) {
+                            $this->swapWithNoneTile($tile);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public function moveTileWithDirection(string $DIRECTION) {
+        $this->tileMover->move($DIRECTION);
+    }
+
+    public function isSolvable() {
+        /**
+         * https://www.cs.bham.ac.uk/~mdr/teaching/modules04/java2/TilesSolvability.html
+         * Fact 3에 기반한 확인 절차.
+         */
+        $invCount = 0;
+        for ($i = 0; $i < pow($this->size, 2) - 1; $i++) {
+            $ixValue = (int)($i / $this->size);
+            $iyValue = (int)($i % $this->size);
+            $iTileValue = $this->getValueWithXY($ixValue, $iyValue);
+            for ($j = $i + 1; $j < pow($this->size, 2); $j++) {
+                $jxValue = (int)($j / $this->size);
+                $jyValue = (int)($j % $this->size);
+                $jTileValue = $this->getValueWithXY($jxValue, $jyValue);
+                if (($iTileValue > $jTileValue) && ($jTileValue != 0)) {
+                    $invCount++;
+                }
+            }
+        }
+        if ($this->size % 2 == 1) {
+            return ($invCount % 2 == 0) ? true : false;
+        }
+        else {
+            return (($invCount + ($this->size - $this->nonePosition->getX())) % 2 == 1) ? true : false;
+        }
+    }
+
+    public function getValueWithXY(int $x, int $y) {
+        foreach ($this->tiles as $tile) {
+            if ($tile->x == $x && $tile->y == $y) {
+                return $tile->value;
+            }
+        }
+        return false;
     }
 }
