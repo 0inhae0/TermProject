@@ -1,49 +1,73 @@
 html, body {
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
     background: floralwhite;
-    color: darkblue;
-    font-size: 18px;
+    text-align: center;
+    height: 100%;
 }
 
-body {
-    margin: 80px;
-}
-
-.heading:after {
-    content: "";
+header {
+    margin: 0 auto;
     display: block;
     clear: both;
+    color: darkblue;
+    text-align: center;
+    float: top;
 }
 
-h1.title {
+header h1.title {
     font-size: 80px;
-    font-weight: bold;
+    margin: 0 auto;
+    display: block;
+}
+
+header h4.description {
+    font-size: 40px;
     margin: 0 auto;
     display: block;
     text-align: center;
 }
 
-.container {
-    width: 500px;
+main {
     margin: 0 auto;
+    display: block;
+}
+
+.new-game-form {
+    margin: 0 auto 20px;
     text-align: center;
+    display: block;
+    align-content: center;
+    child-align: initial;
+}
+
+.new-game-button {
+    background: orange;
+    border-radius: 3px;
+    padding: 0 20px;
+    color: ghostwhite;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    display: inline;
 }
 
 .game-container {
-    margin: 50px auto;
+    margin: 0 auto;
     position: relative;
-    cursor: default;
-    background: darkgrey;
+    background: transparent;
     border-radius: 5px;
     width: 500px;
-    height: 500px;
+    height: 550px;
+    border-width: 0;
 }
 
 .grid-container {
+    width: 500px;
+    height: 500px;
+    background: darkgrey;
     position: absolute;
     z-index: 1;
-    padding: 20px;
 }
 
 .grid-row {
@@ -93,27 +117,28 @@ h1.title {
     z-index: 10;
     font-size: 10px;
 }
-.tile.tile-0 .tile-inner {
+.tile-0 .tile-inner {
     background: papayawhip;
     z-index: 0;
 }
 
-
-.above-game:after {
-    content: "";
-    display: block;
-    clear: both;
+.direction {
+    z-index: 100;
+    position: absolute;
+    margin: 520px auto 0;
+    width: 500px;
+    height: 50px;
+}
+.direction .direction-button {
+    position: relative;
+    z-index: 100;
+    width: 75px;
+    height: 25px;
+    text-align: center;
 }
 
-.new-game-button {
-    background: orange;
-    border-radius: 3px;
-    padding: 0 20px;
-    text-decoration: none;
-    color: ghostwhite;
-    height: 40px;
-    line-height: 42px;
-    display: block;
-    text-align: center;
-    float: right;
+footer {
+    position: page;
+    bottom: 0;
+    width: 100%;
 }

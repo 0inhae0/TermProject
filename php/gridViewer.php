@@ -1,6 +1,5 @@
 <?php
-require_once "grid.php";
-require_once "htmlTransmitter.php";
+require_once "simpleRequire.php";
 
 /**
  * Class gridViewer
@@ -34,10 +33,14 @@ class gridViewer {
     public function init() {
         if (isset($_POST["sizeInput"])) {
             if (isset($_POST["previousGrid"])) {
+                if (isset($_POST["direction"])) {
+                    $this->setWithDirection($_POST["previousGrid"], $_POST["direction"]);
+                    return;
+                }
                 for ($x = 0; $x < $_POST["sizeInput"]; $x++) {
                     for ($y = 0; $y < $_POST["sizeInput"]; $y++) {
                         if (isset($_POST[$x . "-" . $y])) {
-                            $this->setWithGrid($_POST["previousGrid"], ["x" => $x, "y" => $y]);
+                            $this->setWithGrid($_POST["previousGrid"], new position($x, $y));
                             return;
                         }
                     }
@@ -63,12 +66,20 @@ class gridViewer {
 
     /**
      * @param string $serializedPreviousGrid serialize 함수로 변환된 grid
-     * @param array $positionClicked 클릭한 tile의 position을 나타내는 배열. ["x" => $x, "y" => $y]의 형식
+     * @param position $positionClicked 클릭한 tile의 position을 나타내는 배열. ["x" => $x, "y" => $y]의 형식
      */
-    public function setWithGrid(string $serializedPreviousGrid, array $positionClicked) {
-        $this->grid = unserialize((htmlspecialchars_decode($serializedPreviousGrid)));
+    public function setWithGrid(string $serializedPreviousGrid, position $positionClicked) {
+        $this->grid = unserialize(htmlspecialchars_decode($serializedPreviousGrid));
         $this->gridSize = $this->grid->size;
         $this->grid->moveTile($positionClicked);
+        $this->grid->sortTiles();
+        $this->transmit();
+    }
+
+    public function setWithDirection(string $serializedPreviousGrid, string $DIRECTION) {
+        $this->grid = unserialize(htmlspecialchars_decode($serializedPreviousGrid));
+        $this->gridSize = $this->grid->size;
+        $this->grid->moveTileWithDirection($DIRECTION);
         $this->grid->sortTiles();
         $this->transmit();
     }
