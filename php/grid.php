@@ -34,6 +34,7 @@ class grid {
                     $this->swapWithNoneTile(new position($x, 0));
                     $this->swapWithNoneTile(new position($x, 1));
                     $this->swapWithNoneTile($nP);
+                    break;
                 }
             }
         }
