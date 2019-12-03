@@ -31,9 +31,12 @@ class inputManager {
                 $moveY = -1;
                 break;
         }
-
         if (isset($moveX) && isset($moveY)) {
-            $grid->moveTile(new position($grid->nonePosition->getX() + $moveX, $grid->nonePosition->getY() + $moveY));
+            $newX = $grid->nonePosition->getX() + $moveX;
+            $newY = $grid->nonePosition->getY() + $moveY;
+            if (($newX < $grid->size) && (0 <= $newX) && ($newY < $grid->size) && (0 <= $newY)) {
+                $grid->moveTile(new position($newX, $newY));
+            }
         }
     }
 }
