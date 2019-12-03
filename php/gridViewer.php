@@ -60,7 +60,6 @@ class gridViewer {
     public function set(int $size) {
         $this->grid = new grid($size);
         $this->gridSize = $this->grid->size;
-        $this->grid->sortTiles();
         $this->transmit();
     }
 
@@ -72,7 +71,6 @@ class gridViewer {
         $this->grid = unserialize(htmlspecialchars_decode($serializedPreviousGrid));
         $this->gridSize = $this->grid->size;
         $this->grid->moveTile($positionClicked);
-        $this->grid->sortTiles();
         $this->transmit();
     }
 
@@ -80,7 +78,6 @@ class gridViewer {
         $this->grid = unserialize(htmlspecialchars_decode($serializedPreviousGrid));
         $this->gridSize = $this->grid->size;
         $this->grid->moveTileWithDirection($DIRECTION);
-        $this->grid->sortTiles();
         $this->transmit();
     }
 

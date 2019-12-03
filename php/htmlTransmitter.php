@@ -58,26 +58,24 @@ class htmlTransmitter {
         echo '<input type="hidden" name="sizeInput" value="'.$grid->size.'">'.PHP_EOL;
         $serializedGrid = serialize($grid);
         echo '<input type="hidden" name="previousGrid" value="'.htmlspecialchars($serializedGrid).'">'.PHP_EOL;
-        foreach ($grid->tiles as $tile) {
-            $this->transmitTileContainer_Tile($tile, $width);
+        for ($x = 0; $x < $grid->size; $x++) {
+            for ($y = 0; $y < $grid->size; $y++) {
+                $this->transmitTileContainer_Tile(new position($x, $y), $width, $grid);
+            }
         }
     }
 
-    /**
-     * @param tile $tile 추가하는 각 tile
-     * @param int $width tile의
-     */
-    public function transmitTileContainer_Tile(tile $tile, int $width) {
-        $HTMLFormClasses = "tile tile-position-".$tile->x."-".$tile->y." tile-".$tile->value;
+    public function transmitTileContainer_Tile(position $position, int $width, grid $grid) {
+        $HTMLFormClasses = "tile tile-position-".$position->getX()."-".$position->getY()." tile-".$grid->tiles[$position->getX()][$position->getY()];
         $HTMLFormStyle =
             "width: ".$width."px; ".
             "height: ".$width."px; ".
             "font-size: ".(int)($width/2)."px; ".
             "line-height: ".$width."px";
 
-        $tileValue = $tile->value != 0 ? $tile->value : "";
+        $tileValue = $grid->tiles[$position->getX()][$position->getY()] != 0 ? $grid->tiles[$position->getX()][$position->getY()] : "";
         echo ('<div class="'.$HTMLFormClasses.'" style="'.$HTMLFormStyle.'">'.PHP_EOL);
-        echo ('<input type="submit" class="tile-inner" name="'.($tile->x)."-".($tile->y).'" style="'.$HTMLFormStyle.'" value='.$tileValue.'>'.PHP_EOL);
+        echo ('<input type="submit" class="tile-inner" name="'.($position->x)."-".($position->y).'" style="'.$HTMLFormStyle.'" value='.$tileValue.'>'.PHP_EOL);
         echo ("</div>".PHP_EOL);
     }
 
