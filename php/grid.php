@@ -12,21 +12,13 @@ class grid {
      */
     public $size;
     /**
-     * @var tile[]
+     * @var int[][]
      */
     public $tiles;
     /**
      * @var position
      */
     public $nonePosition;
-    /**
-     * @var tile 빈 타일. 여러 계산상의 편리함 때문에 따로 저장해놓고자 함.
-     */
-    public $noneTile;
-    /**
-     * @var tileMover
-     */
-    public $tileMover;
 
     /**
      * grid constructor.
@@ -36,29 +28,25 @@ class grid {
         $this->size = $size;
         $this->tiles = $this->addRandomTilesInit();
         if (!($this->isSolvable())) {
-            foreach ($this->tiles as $tile1) {
-                if ($tile1->value != 0) {
-                    foreach ($this->tiles as $tile2) {
-                        if ($tile2->value != 0) {
-                            $this->swapWithNoneTile($tile1);
-                            $this->swapWithNoneTile($tile2);
-                            $this->swapWithNoneTile($tile1);
-                        }
-                    }
+            for ($x = 0; $x < $size; $x++) {
+                if ($this->nonePosition->getX() != $x) {
+                    $nP = $this->nonePosition;
+                    $this->swapWithNoneTile(new position($x, 0));
+                    $this->swapWithNoneTile(new position($x, 1));
+                    $this->swapWithNoneTile($nP);
                     break;
                 }
             }
         }
-        $this->tileMover = new tileMover($this);
     }
 
     /**
-     * @return tile[]
+     * @return int[][]
      * 
      * tile의 value를 무작위 순서로 정하여 rtn 배열에 추가한 후 반환
      */
     public function addRandomTilesInit() {
-        $rtn = array();
+        $rtn = array(array());
         $inputValue = array();
         for ($i = 0; $i < $this->size * $this->size; $i++) {
             array_push($inputValue, $i);
@@ -66,54 +54,23 @@ class grid {
         shuffle($inputValue);
         for ($x = 0; $x < $this->size; $x++) {
             for ($y = 0; $y < $this->size; $y++) {
-                if ($inputValue[$x * $this->size + $y] == 0) {
+                $rtn[$x][$y] = $inputValue[$x * $this->size + $y];
+                if (($inputValue[$x * $this->size + $y]) == 0) {
                     $this->nonePosition = new position($x, $y);
-                    $this->noneTile = new tile($this->nonePosition, 0);
-                    array_push($rtn, $this->noneTile);
                 }
-                else array_push($rtn, new tile(new position($x, $y), $inputValue[$x * $this->size + $y]));
             }
         }
         return $rtn;
     }
 
     /**
-     * tiles 배열을 정렬하는 함수
-     * HTML에서 화면에 표시할 때 순서에 맞춰 tile이 배치되도록 하게 하기 위함
+     * @param position $position
      */
-    public function sortTiles() {
-        usort($this->tiles, function (tile $a, tile $b) {
-            $rtn = $a->x <=> $b->x;
-            if ($rtn == 0) {
-                $rtn = $a->y <=> $b->y;
-            }
-            return $rtn;
-        });
-    }
-
-    /**
-     * @param tile $tile1 noneTile과 위치를 바꿀 tile
-     *
-     * 입력받은 tile과 noneTile의 x, y값을 서로 바꾼다.
-     * 보드판에서 클릭했을 때 tile이 이동하는 것을 이 함수를 반복하는 것으로 구현.
-     */
-    public function swapWithNoneTile(tile $tile1) {
-        foreach ($this->tiles as $tile) {
-            if ($tile->isEqual($tile1)) {
-                $tileToSwap1 = &$tile;
-                break;
-            }
-        }
-        if (!(isset($tileToSwap1))) return;
-
-        $tmp = $tileToSwap1->x;
-        $tileToSwap1->x = $this->nonePosition->getX();
-        $this->nonePosition->setX($tmp);
-        $tmp = $tileToSwap1->y;
-        $tileToSwap1->y = $this->nonePosition->getY();
-        $this->nonePosition->setY($tmp);
-        $this->noneTile->x = $this->nonePosition->getX();
-        $this->noneTile->y = $this->nonePosition->getY();
+    public function swapWithNoneTile(position $position) {
+        $tmp = $this->tiles[$position->getX()][$position->getY()];
+        $this->tiles[$position->getX()][$position->getY()] = $this->tiles[$this->nonePosition->getX()][$this->nonePosition->getY()];
+        $this->tiles[$this->nonePosition->getX()][$this->nonePosition->getY()] = $tmp;
+        $this->nonePosition = $position;
     }
 
     /**
@@ -123,63 +80,29 @@ class grid {
      * 만약 그렇다면 인접한 tile끼리 위치를 바꾸는 것을 반복해서 이동시킨다.
      */
     public function moveTile(position $position) {
-        foreach ($this->tiles as $tile) {
-            if ($tile->x == $position->getX() && $tile->y == $position->getY()) {
-                $tileClicked = $tile;
-                break;
-            }
-        }
-        if (!(isset($tileClicked))) {
-            return;
-        }
+        if ($position->isEqual($this->nonePosition)) return;
 
-        if ($this->nonePosition->getX() == $tileClicked->x) {
-            if ($this->nonePosition->getY() < $tileClicked->y) {
-                while ($this->nonePosition->getY() < $tileClicked->y) {
-                    foreach ($this->tiles as $tile) {
-                        if ($tile->x == $this->nonePosition->getX() && $tile->y == $this->nonePosition->getY() + 1) {
-                            $this->swapWithNoneTile($tile);
-                            break;
-                        }
-                    }
-                }
+        if ($this->nonePosition->getX() == $position->getX()) {
+            while ($this->nonePosition->getY() < $position->getY()) {
+                $this->swapWithNoneTile(new position($this->nonePosition->getX(), $this->nonePosition->getY() + 1));
             }
-            elseif ($this->nonePosition->getY() > $tileClicked->y) {
-                while ($this->nonePosition->getY() > $tileClicked->y) {
-                    foreach ($this->tiles as $tile) {
-                        if ($tile->x == $this->nonePosition->getX() && $tile->y == $this->nonePosition->getY() - 1) {
-                            $this->swapWithNoneTile($tile);
-                            break;
-                        }
-                    }
-                }
+            while ($this->nonePosition->getY() > $position->getY()) {
+                $this->swapWithNoneTile(new position($this->nonePosition->getX(), $this->nonePosition->getY() - 1));
             }
         }
-        elseif ($this->nonePosition->getY() == $tileClicked->y) {
-            if ($this->nonePosition->getX() < $tileClicked->x) {
-                while ($this->nonePosition->getX() < $tileClicked->x) {
-                    foreach ($this->tiles as $tile) {
-                        if ($tile->x == $this->nonePosition->getX() + 1 && $tile->y == $this->nonePosition->getY()) {
-                            $this->swapWithNoneTile($tile);
-                            break;
-                        }
-                    }
-                }
-            } elseif ($this->nonePosition->getX() > $tileClicked->x) {
-                while ($this->nonePosition->getX() > $tileClicked->x) {
-                    foreach ($this->tiles as $tile) {
-                        if ($tile->x == $this->nonePosition->getX() - 1 && $tile->y == $this->nonePosition->getY()) {
-                            $this->swapWithNoneTile($tile);
-                            break;
-                        }
-                    }
-                }
+        else if ($this->nonePosition->getY() == $position->getY()) {
+            while ($this->nonePosition->getX() < $position->getX()) {
+                $this->swapWithNoneTile(new position($this->nonePosition->getX() + 1, $this->nonePosition->getY()));
+            }
+            while ($this->nonePosition->getX() > $position->getX()) {
+                $this->swapWithNoneTile(new position($this->nonePosition->getX() - 1, $this->nonePosition->getY()));
             }
         }
     }
 
     public function moveTileWithDirection(string $DIRECTION) {
-        $this->tileMover->move($DIRECTION);
+        $inputManager = new inputManager();
+        $inputManager->move($this, $DIRECTION);
     }
 
     public function isSolvable() {
@@ -191,11 +114,11 @@ class grid {
         for ($i = 0; $i < pow($this->size, 2) - 1; $i++) {
             $ixValue = (int)($i / $this->size);
             $iyValue = (int)($i % $this->size);
-            $iTileValue = $this->getValueWithXY($ixValue, $iyValue);
+            $iTileValue = $this->tiles[$ixValue][$iyValue];
             for ($j = $i + 1; $j < pow($this->size, 2); $j++) {
                 $jxValue = (int)($j / $this->size);
                 $jyValue = (int)($j % $this->size);
-                $jTileValue = $this->getValueWithXY($jxValue, $jyValue);
+                $jTileValue = $this->tiles[$jxValue][$jyValue];
                 if (($iTileValue > $jTileValue) && ($jTileValue != 0)) {
                     $invCount++;
                 }
@@ -209,12 +132,16 @@ class grid {
         }
     }
 
-    public function getValueWithXY(int $x, int $y) {
-        foreach ($this->tiles as $tile) {
-            if ($tile->x == $x && $tile->y == $y) {
-                return $tile->value;
+    public function getOrderOfPositionHaveToSet($size) {
+        $rtn = array();
+        for ($x = 0; $x < $size; $x++) {
+            for ($y = $x; $y < $size; $y++) {
+                array_push($rtn, new position($x, $y));
+            }
+            for ($y = $x + 1; $y < $size; $y++) {
+                array_push($rtn, new position($y, $x));
             }
         }
-        return false;
+        return $rtn;
     }
 }
