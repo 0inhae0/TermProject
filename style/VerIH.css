@@ -1,9 +1,11 @@
+@import url(fonts/fonts.css);
+
 html, body {
     margin: 0 auto;
     padding: 0;
-    background: floralwhite;
     text-align: center;
     height: 100%;
+    font-family: "BRLNSR", serif;
 }
 
 a {
@@ -22,16 +24,11 @@ header {
 }
 
 header h1.title {
-    font-size: 80px;
     margin: 0 auto;
-    display: block;
-}
-
-header h4.description {
-    font-size: 40px;
-    margin: 0 auto;
-    display: block;
-    text-align: center;
+    font-size: 100px;
+    color: rgb(240, 100, 65);
+    -webkit-text-stroke: 2px rgb(90, 50, 0);
+    font-family: "BRLNSR", serif;
 }
 
 main {
@@ -48,14 +45,24 @@ main {
 }
 
 .new-game-button {
-    background: orange;
-    border-radius: 3px;
-    padding: 0 20px;
-    color: ghostwhite;
-    height: 40px;
-    line-height: 40px;
+    background-color: rgb(240, 100, 65);
+    height: 60px;
+    width: 180px;
+    border-radius: 60px;
+    border-color: rgb(90, 50, 0);
+    border-width: 6px;
+    font-size: 30px;
+    font-weight: bold;
+    color: rgb(255, 255, 255);
     text-align: center;
     display: inline;
+}
+
+.yellow-label {
+    color: rgb(255, 200, 100);
+    font-weight: bold;
+    font-size: 20px;
+    margin: 20px;
 }
 
 .game-container {
@@ -64,7 +71,6 @@ main {
     background: transparent;
     border-radius: 5px;
     width: 500px;
-    height: 550px;
     border-width: 0;
 }
 
@@ -127,7 +133,6 @@ main {
     z-index: 0;
 }
 
-
 .auto-button {
     position: relative;
     z-index: 100;
@@ -152,7 +157,30 @@ main {
 }
 
 footer {
-    position: page;
+    position: absolute;
     bottom: 0;
     width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.5; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+.slider:hover {
+    opacity: 1;
+}
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: rgb(64, 180, 80);
+    cursor: pointer;
 }

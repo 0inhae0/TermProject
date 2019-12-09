@@ -15,6 +15,7 @@ class grid {
      * @var int[][]
      */
     public $tiles;
+
     /**
      * @var position
      */
@@ -40,11 +41,6 @@ class grid {
         }
     }
 
-    /**
-     * @return int[][]
-     * 
-     * tile의 value를 무작위 순서로 정하여 rtn 배열에 추가한 후 반환
-     */
     public function addRandomTilesInit() {
         $rtn = array(array());
         $inputValue = array();
@@ -104,6 +100,13 @@ class grid {
         $inputManager = new inputManager();
         $inputManager->move($this, $DIRECTION);
     }
+    public function moveTileAuto() {
+        //$inputManager = new inputManager();
+        //$gridSolver = new gridSolver($this);
+        //$gridSolver->auto($this);
+        $myGridSolver = new myGridSolver($this);
+        $myGridSolver->myAuto();
+    }
 
     public function isSolvable() {
         /**
@@ -125,13 +128,17 @@ class grid {
             }
         }
         if ($this->size % 2 == 1) {
-            return ($invCount % 2 == 0) ? true : false;
+            return ($invCount % 2 == 0);
         }
         else {
             return (($invCount + ($this->size - $this->nonePosition->getX())) % 2 == 1) ? true : false;
         }
     }
 
+    /**
+     * @param $size
+     * @return position[]
+     */
     public function getOrderOfPositionHaveToSet($size) {
         $rtn = array();
         for ($x = 0; $x < $size; $x++) {
@@ -143,5 +150,16 @@ class grid {
             }
         }
         return $rtn;
+    }
+
+    public function getPosition($num) {
+        if (($num >= 0) && ($num < pow($this->size, 2))) {
+            for ($x = 0; $x < $this->size; $x++) {
+                for ($y = 0; $y < $this->size; $y++) {
+                    if ($this->tiles[$x][$y] == $num) return new position($x, $y);
+                }
+            }
+        }
+        return false;
     }
 }
