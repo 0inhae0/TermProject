@@ -50,7 +50,7 @@ class htmlTransmitter {
 
     /**
      * @param grid $grid 표시할 grid
-     * 
+     *
      * sizeInput과 previousGrid를 POST로 전달하도록 함
      */
     public function transmitTileContainer_Grid(grid $grid) {
@@ -82,6 +82,7 @@ class htmlTransmitter {
     public function transmitMoveDirection(grid $grid) {
         echo '
         <form method="post" name="moveDirection" class="direction" action="'.$_SERVER['PHP_SELF'].'">
+            <input type="submit" name="direction" class="direction-button" value="AUTO">
             <input type="submit" name="direction" class="direction-button" value="'.inputManager::UP.'">
             <input type="submit" name="direction" class="direction-button" value="'.inputManager::RIGHT.'">
             <input type="submit" name="direction" class="direction-button" value="'.inputManager::DOWN.'">

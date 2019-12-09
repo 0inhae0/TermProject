@@ -77,6 +77,8 @@ class gridViewer {
     public function setWithDirection(string $serializedPreviousGrid, string $DIRECTION) {
         $this->grid = unserialize(htmlspecialchars_decode($serializedPreviousGrid));
         $this->gridSize = $this->grid->size;
+        if($DIRECTION=="AUTO")
+            $this->grid->moveTileAuto();
         $this->grid->moveTileWithDirection($DIRECTION);
         $this->transmit();
     }
@@ -88,4 +90,3 @@ class gridViewer {
         $this->htmlTransmitter->transmitTileContainer($this);
     }
 }
-?>
